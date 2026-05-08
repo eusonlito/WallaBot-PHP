@@ -4,10 +4,10 @@ Bot nativo en PHP 8.5+ para el rastreo de búsquedas en Wallapop y notificacione
 
 ## Características
 - **Sin dependencias externas**: Código PHP puro sin Composer.
-- **Arquitectura robusta**: Basada en el motor de Planify (Calendar), con tipado estricto y Active Record por reflexión.
+- **Arquitectura robusta**: Con tipado estricto y Active Record por reflexión.
 - **Filtrado Estricto de Títulos**: Filtra el ruido de Wallapop. El bot se asegura de que todas las palabras clave de tu búsqueda existan literalmente en el título del anuncio (ignorando acentos y mayúsculas), evitando falsos positivos por descripciones largas.
 - **Notificaciones inteligentes**: Detecta nuevos ítems y bajadas de precio de ítems ya rastreados.
-- **Modo Debug y Logs**: Sistema de rotación de logs diario. Posibilidad de activar el modo debug para parsear y guardar JSONs de respuesta de forma legible en `curl.log`.
+- **Modo Debug y Logs**: Sistema de rotación de logs diario. Posibilidad de activar el modo debug para parsear y guardar JSONs de peticiones, base de datos, curl y demás.
 - **Visualizador web**: Interfaz mínima para revisar los últimos hallazgos.
 
 ## Requisitos
