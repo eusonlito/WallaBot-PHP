@@ -33,7 +33,7 @@ class SearchSave extends ControllerAbstract
             'category_ids' => $this->getInputString('category_ids'),
             'price_min' => $this->getInputFloat('price_min'),
             'price_max' => $this->getInputFloat('price_max'),
-            'distance' => $this->getInputString('distance', '400'),
+            'distance' => $this->getInputString('distance'),
             'latitude' => $this->getInputFloat('latitude'),
             'longitude' => $this->getInputFloat('longitude'),
             'is_shippable' => $this->getInputBool('is_shippable') ? 1 : ($this->getInput('is_shippable') === null ? null : 0),

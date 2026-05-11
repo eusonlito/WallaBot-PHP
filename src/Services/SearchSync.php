@@ -21,6 +21,18 @@ class SearchSync
         $this->wallapop = new WallapopClient();
         $this->telegram = new TelegramClient();
     }
+    
+    private function calculateDistance(float $lat1, float $lon1, float $lat2, float $lon2): float
+    {
+        $earthRadius = 6371; // km
+        $latDiff = deg2rad($lat2 - $lat1);
+        $lonDiff = deg2rad($lon2 - $lon1);
+        $a = sin($latDiff/2) * sin($latDiff/2) +
+             cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+             sin($lonDiff/2) * sin($lonDiff/2);
+        $c = 2 * atan2(sqrt($a), sqrt(1-$a));
+        return $earthRadius * $c;
+    }
 
     public function sync(Search $search, bool $notify = true): void
     {
@@ -28,6 +40,8 @@ class SearchSync
             $items = $this->wallapop->search($search);
 
             $searchKeywords = array_filter(explode(' ', Helper::normalize($search->keywords)));
+            $maxDistanceKm = isset($search->distance) && is_numeric($search->distance) ? (float)$search->distance : null;
+            $hasLocation = !empty($search->latitude) && !empty($search->longitude);
 
             foreach ($items as $data) {
                 $title = (string)$data['title'];
@@ -43,6 +57,16 @@ class SearchSync
 
                 if ($isValid === false) {
                     continue;
+                }
+                
+                // Strict Distance Filter
+                $itemLat = $data['location']['latitude'] ?? null;
+                $itemLon = $data['location']['longitude'] ?? null;
+                if ($hasLocation && $maxDistanceKm !== null && $itemLat !== null && $itemLon !== null) {
+                    $itemDistance = $this->calculateDistance((float)$search->latitude, (float)$search->longitude, (float)$itemLat, (float)$itemLon);
+                    if ($itemDistance > $maxDistanceKm) {
+                        continue; // Skip items that Wallapop injected from outside the radius
+                    }
                 }
 
                 $wallapopId = (string)$data['id'];
