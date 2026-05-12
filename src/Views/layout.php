@@ -32,7 +32,7 @@
             }
         }
     </script>
-    <link rel="stylesheet" href="/css/style.css?v=<?= helper()->filemtime('/css/style.css') ?>">
+    <link rel="stylesheet" href="/css/style.css?v=<?= helper()->publicVersion('/css/style.css') ?>">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-background text-foreground min-h-screen font-sans antialiased">
@@ -346,7 +346,7 @@
         <img id="image-modal-img" src="" class="max-w-full max-h-full object-contain p-4 scale-95 transition-transform duration-300 ease-out z-10" alt="Full Image">
     </div>
 
-    <script src="/js/app.js?v=<?= helper()->filemtime('/js/app.js') ?>"></script>
+    <script src="/js/app.js?v=<?= helper()->publicVersion('/js/app.js') ?>"></script>
     <script>
         if (window.lucide) window.lucide.createIcons();
     </script>

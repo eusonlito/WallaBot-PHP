@@ -38,9 +38,9 @@ class Helper
         ]);
     }
 
-    public function filemtime(string $file): int
+    public function publicVersion(string $file): int
     {
-        $file = dirname(__DIR__).'/'.ltrim($file, '/');
+        $file = dirname(__DIR__, 2).'/public/'.ltrim($file, '/');
 
         return is_file($file) ? filemtime($file) : 0;
     }
