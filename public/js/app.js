@@ -184,6 +184,12 @@ function toggleExtraFilters() {
 function openSearchModal() {
     document.getElementById('modal-title').innerText = 'Nueva búsqueda';
     document.getElementById('btn-submit-search').innerText = 'Crear búsqueda';
+    const deleteBtn = document.getElementById('btn-delete-search');
+    if (deleteBtn) {
+        deleteBtn.classList.add('hidden');
+        deleteBtn.classList.remove('flex');
+    }
+    
     document.getElementById('search-form').reset();
     document.getElementById('field-id').value = '';
     document.getElementById('field-active').checked = true;
@@ -217,6 +223,12 @@ function editSearch(id) {
     
     document.getElementById('modal-title').innerText = 'Editar búsqueda';
     document.getElementById('btn-submit-search').innerText = 'Guardar';
+    const deleteBtn = document.getElementById('btn-delete-search');
+    if (deleteBtn) {
+        deleteBtn.classList.remove('hidden');
+        deleteBtn.classList.add('flex');
+    }
+
     document.getElementById('field-id').value = s.id;
     document.getElementById('field-active').checked = !!s.active;
     document.getElementById('field-keywords').value = s.keywords;
@@ -261,4 +273,24 @@ function editSearch(id) {
     container.classList.add('opacity-100');
     content.classList.remove('opacity-0', 'scale-95');
     content.classList.add('opacity-100', 'scale-100');
+}
+
+function deleteCurrentSearch() {
+    if (!confirm('¿Estás seguro de que quieres borrar esta búsqueda y todos sus resultados de forma permanente?')) return;
+    
+    const id = document.getElementById('field-id').value;
+    if (!id) return;
+    
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/searches/delete';
+    
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'id';
+    input.value = id;
+    
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
 }

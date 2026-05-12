@@ -2,9 +2,11 @@
 
 namespace App\Utils;
 
+use Throwable;
+
 class Helper
 {
-    public static function mkdir(string $dir, bool $file = false): string
+    public function mkdir(string $dir, bool $file = false): string
     {
         if ($file) {
             $dir = dirname($dir);
@@ -16,17 +18,15 @@ class Helper
 
         try {
             mkdir($dir, 0755, true);
-        } catch (\Throwable) {
+        } catch (Throwable) {
         }
 
         return $dir;
     }
 
-    public static function normalize(string $text): string
+    public function normalize(string $text): string
     {
-        $text = mb_strtolower(trim($text), 'UTF-8');
-        
-        $unwanted = [
+        return strtr(mb_strtolower(trim($text), 'UTF-8'), [
             'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
             'à' => 'a', 'è' => 'e', 'ì' => 'i', 'ò' => 'o', 'ù' => 'u',
             'ä' => 'a', 'ë' => 'e', 'ï' => 'i', 'ö' => 'o', 'ü' => 'u',
@@ -35,8 +35,13 @@ class Helper
             'À' => 'a', 'È' => 'e', 'Ì' => 'i', 'Ò' => 'o', 'Ù' => 'u',
             'Ä' => 'a', 'Ë' => 'e', 'Ï' => 'i', 'Ö' => 'o', 'Ü' => 'u',
             'Ñ' => 'n', 'Ç' => 'c',
-        ];
+        ]);
+    }
 
-        return strtr($text, $unwanted);
+    public function filemtime(string $file): int
+    {
+        $file = dirname(__DIR__).'/'.ltrim($file, '/');
+
+        return is_file($file) ? filemtime($file) : 0;
     }
 }

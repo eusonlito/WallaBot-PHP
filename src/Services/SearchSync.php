@@ -2,13 +2,12 @@
 
 namespace App\Services;
 
+use Throwable;
 use App\Models\Search;
 use App\Models\Item;
 use App\Services\Wallapop\Client as WallapopClient;
 use App\Services\Telegram\Client as TelegramClient;
 use App\Utils\Logger;
-use App\Utils\Helper;
-use Throwable;
 use App\Utils\Error;
 
 class SearchSync
@@ -21,7 +20,7 @@ class SearchSync
         $this->wallapop = new WallapopClient();
         $this->telegram = new TelegramClient();
     }
-    
+
     private function calculateDistance(float $lat1, float $lon1, float $lat2, float $lon2): float
     {
         $earthRadius = 6371; // km
@@ -31,6 +30,7 @@ class SearchSync
              cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
              sin($lonDiff/2) * sin($lonDiff/2);
         $c = 2 * atan2(sqrt($a), sqrt(1-$a));
+
         return $earthRadius * $c;
     }
 
@@ -39,13 +39,13 @@ class SearchSync
         try {
             $items = $this->wallapop->search($search);
 
-            $searchKeywords = array_filter(explode(' ', Helper::normalize($search->keywords)));
+            $searchKeywords = array_filter(explode(' ', helper()->normalize($search->keywords)));
             $maxDistanceKm = isset($search->distance) && is_numeric($search->distance) ? (float)$search->distance : null;
             $hasLocation = !empty($search->latitude) && !empty($search->longitude);
 
             foreach ($items as $data) {
                 $title = (string)$data['title'];
-                $normalizedTitle = Helper::normalize($title);
+                $normalizedTitle = helper()->normalize($title);
                 $isValid = true;
 
                 foreach ($searchKeywords as $kw) {
@@ -58,7 +58,7 @@ class SearchSync
                 if ($isValid === false) {
                     continue;
                 }
-                
+
                 // Strict Distance Filter
                 $itemLat = $data['location']['latitude'] ?? null;
                 $itemLon = $data['location']['longitude'] ?? null;

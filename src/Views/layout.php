@@ -32,26 +32,34 @@
             }
         }
     </script>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/style.css?v=<?= helper()->filemtime('/css/style.css') ?>">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-background text-foreground min-h-screen font-sans antialiased">
     <div class="relative flex min-h-screen flex-col">
         <!-- Header -->
+        <?php if ($page !== 'logout'): ?>
         <header class="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur">
-            <div class="container flex h-16 items-center justify-between mx-auto px-4">
-                <a href="/" class="flex items-center gap-3 font-bold text-lg tracking-tight">
+            <div class="container flex h-16 items-center justify-between mx-auto px-4 overflow-x-auto custom-scrollbar">
+                <a href="/" class="flex items-center gap-2 sm:gap-3 font-bold text-lg tracking-tight shrink-0 mr-4">
                     <div class="bg-black text-white w-8 h-8 rounded flex items-center justify-center text-sm font-black">W</div>
-                    <span>WallaBot</span>
+                    <span class="hidden sm:inline">WallaBot</span>
                 </a>
-                <nav class="flex h-full items-center gap-8 text-sm font-medium">
-                    <a href="/" class="flex h-full items-center px-1 border-b-2 <?= $page === 'results' ? 'border-black text-foreground font-bold' : 'border-transparent text-muted-foreground hover:text-foreground transition-all' ?>">Resultados</a>
-                    <a href="/searches" class="flex h-full items-center px-1 border-b-2 <?= $page === 'searches' ? 'border-black text-foreground font-bold' : 'border-transparent text-muted-foreground hover:text-foreground transition-all' ?>">Búsquedas</a>
-                </nav>
+                <div class="flex items-center gap-4 sm:gap-8 h-full shrink-0">
+                    <nav class="flex h-full items-center gap-4 sm:gap-8 text-sm font-medium">
+                        <a href="/" class="flex h-full items-center px-1 border-b-2 <?= $page === 'results' ? 'border-black text-foreground font-bold' : 'border-transparent text-muted-foreground hover:text-foreground transition-all' ?>">Resultados</a>
+                        <a href="/searches" class="flex h-full items-center px-1 border-b-2 <?= $page === 'searches' ? 'border-black text-foreground font-bold' : 'border-transparent text-muted-foreground hover:text-foreground transition-all' ?>">Búsquedas</a>
+                    </nav>
+                    <div class="h-6 w-px bg-slate-200"></div>
+                    <a href="/logout" class="text-slate-400 hover:text-rose-600 transition-colors flex items-center justify-center w-8 h-8 rounded-full hover:bg-rose-50" title="Cerrar sesión">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </a>
+                </div>
             </div>
         </header>
+        <?php endif; ?>
 
-        <main class="flex-1 container mx-auto px-4 py-10 relative">
+        <main class="flex-1 container mx-auto px-4 py-6 sm:py-10 relative">
             <?php require __DIR__ . "/{$page}.php"; ?>
         </main>
     </div>
@@ -284,20 +292,28 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- ESTADO -->
+                    <div class="space-y-4 pt-6 border-t border-slate-100">
+                        <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ESTADO</h3>
+                        <label class="flex items-center gap-3 cursor-pointer group w-fit">
+                            <div class="relative flex items-center">
+                                <input type="checkbox" name="active" value="1" id="field-active" class="peer sr-only" checked>
+                                <div class="w-10 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                            </div>
+                            <span class="text-sm font-bold text-slate-900 select-none">Búsqueda activa</span>
+                        </label>
+                    </div>
                 </div>
 
                 <!-- Footer -->
-                <div class="px-8 py-5 border-t border-slate-100 bg-slate-50 flex items-center justify-between shrink-0">
-                    <label class="flex items-center gap-3 cursor-pointer group">
-                        <div class="relative flex items-center">
-                            <input type="checkbox" name="active" value="1" id="field-active" class="peer sr-only" checked>
-                            <div class="w-10 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
-                        </div>
-                        <span class="text-sm font-bold text-slate-900 select-none">Búsqueda activa</span>
-                    </label>
-                    <div class="flex gap-3">
-                        <button type="button" onclick="closeSearchModal()" class="h-11 px-6 rounded-xl border border-slate-200 text-sm font-bold text-slate-600 bg-white hover:bg-slate-50 hover:text-slate-900 transition-colors shadow-sm">Cancelar</button>
-                        <button type="submit" id="btn-submit-search" class="h-11 px-6 rounded-xl bg-black text-white text-sm font-bold hover:bg-slate-800 transition-colors shadow-md">Guardar cambios</button>
+                <div class="px-6 py-4 sm:px-8 sm:py-5 border-t border-slate-100 bg-slate-50 flex items-center justify-between shrink-0 sm:rounded-b-2xl">
+                    <button type="button" id="btn-delete-search" onclick="deleteCurrentSearch()" class="hidden items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-xl text-rose-500 hover:bg-rose-100 hover:text-rose-700 transition-colors" title="Borrar búsqueda">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                    </button>
+                    <div class="flex gap-2 sm:gap-3 ml-auto">
+                        <button type="button" onclick="closeSearchModal()" class="h-10 sm:h-11 px-4 sm:px-6 rounded-xl border border-slate-200 text-sm font-bold text-slate-600 bg-white hover:bg-slate-50 hover:text-slate-900 transition-colors shadow-sm">Cancelar</button>
+                        <button type="submit" id="btn-submit-search" class="h-10 sm:h-11 px-4 sm:px-6 rounded-xl bg-black text-white text-sm font-bold hover:bg-slate-800 transition-colors shadow-md">Guardar</button>
                     </div>
                 </div>
             </form>

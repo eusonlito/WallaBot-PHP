@@ -24,3 +24,5 @@ spl_autoload_register(function (string $class) {
 if (defined('REQUEST_ID') === false) {
     define('REQUEST_ID', uniqid());
 }
+
+require __DIR__.'/Utils/functions.php';

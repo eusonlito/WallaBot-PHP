@@ -16,7 +16,8 @@ class CurlLogger
         $time = date('H:i:s');
 
         $file = dirname(__DIR__, 2).'/logs/'.$date.'/curl.log';
-        Helper::mkdir($file, true);
+
+        helper()->mkdir($file, true);
 
         $log = "[$time] $method $url - HTTP $httpCode\n";
         $log .= "Headers: ".json_encode($headers, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n";

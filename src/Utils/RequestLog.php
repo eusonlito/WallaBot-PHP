@@ -79,7 +79,7 @@ class RequestLog
     {
         $file = dirname(dirname(__DIR__)).'/logs/'.date('Y-m-d').'/requests.log';
 
-        Helper::mkdir($file, true);
+        helper()->mkdir($file, true);
 
         return $file;
     }

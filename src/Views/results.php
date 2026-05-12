@@ -1,29 +1,25 @@
 <section id="section-items">
-    <div class="flex items-center justify-between mb-8">
-        <h1 class="text-4xl font-extrabold tracking-tight text-slate-900">Resultados</h1>
-        <div class="flex items-center gap-4">
-            <form id="filter-form" action="/" method="GET" class="flex items-center gap-4 m-0">
-                <label class="flex items-center gap-2 cursor-pointer border border-slate-200 rounded-lg px-3 py-2 bg-white text-sm shadow-sm hover:bg-slate-50 transition-colors">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 shrink-0">Resultados</h1>
+        <div class="flex items-center gap-3 overflow-x-auto custom-scrollbar pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0">
+            <form id="filter-form" action="/" method="GET" class="flex items-center gap-3 m-0 shrink-0">
+                <label class="flex items-center gap-2 cursor-pointer border border-slate-200 rounded-lg px-3 h-10 bg-white text-sm shadow-sm hover:bg-slate-50 transition-colors shrink-0">
                     <input type="checkbox" name="favorites_only" value="1" onchange="document.getElementById('filter-form').submit()" class="w-4 h-4 rounded border-slate-300 text-rose-500 focus:ring-rose-500" <?= $favoritesOnly ? 'checked' : '' ?>>
                     <span class="font-medium text-slate-700 select-none">Favoritos</span>
                 </label>
 
-                <div class="flex items-center gap-2">
-                    <select name="sort" onchange="document.getElementById('filter-form').submit()" class="h-10 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-400">
-                        <option value="date_desc" <?= $sort === 'date_desc' ? 'selected' : '' ?>>Más recientes</option>
-                        <option value="price_asc" <?= $sort === 'price_asc' ? 'selected' : '' ?>>Precio: más barato</option>
-                        <option value="price_desc" <?= $sort === 'price_desc' ? 'selected' : '' ?>>Precio: más caro</option>
-                    </select>
-                </div>
+                <select name="sort" onchange="document.getElementById('filter-form').submit()" class="h-10 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-400 shrink-0">
+                    <option value="date_desc" <?= $sort === 'date_desc' ? 'selected' : '' ?>>Más recientes</option>
+                    <option value="price_asc" <?= $sort === 'price_asc' ? 'selected' : '' ?>>Precio: más barato</option>
+                    <option value="price_desc" <?= $sort === 'price_desc' ? 'selected' : '' ?>>Precio: más caro</option>
+                </select>
 
-                <div class="flex items-center gap-2">
-                    <select name="search_id" onchange="document.getElementById('filter-form').submit()" class="h-10 w-[200px] rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-400">
-                        <option value="">Todas las búsquedas</option>
-                        <?php foreach ($searches as $s): ?>
-                            <option value="<?= $s->id ?>" <?= $searchId === $s->id ? 'selected' : '' ?>><?= htmlspecialchars($s->keywords) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+                <select name="search_id" onchange="document.getElementById('filter-form').submit()" class="h-10 w-[180px] sm:w-[200px] rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-400 shrink-0">
+                    <option value="">Todas las búsquedas</option>
+                    <?php foreach ($searches as $s): ?>
+                        <option value="<?= $s->id ?>" <?= $searchId === $s->id ? 'selected' : '' ?>><?= htmlspecialchars($s->keywords) ?></option>
+                    <?php endforeach; ?>
+                </select>
             </form>
         </div>
     </div>

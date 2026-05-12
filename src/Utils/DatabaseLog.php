@@ -141,7 +141,7 @@ class DatabaseLog
     {
         $file = self::base().'/logs/'.date('Y-m-d').'/db.log';
 
-        Helper::mkdir($file, true);
+        helper()->mkdir($file, true);
 
         return $file;
     }

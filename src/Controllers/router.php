@@ -14,4 +14,6 @@ $router->post('/searches/delete', static fn () => new SearchDelete()->middleware
 $router->post('/items/favorite', static fn () => new ItemFavorite()->middlewareAuthBasic()->handle());
 $router->post('/items/hide', static fn () => new ItemHide()->middlewareAuthBasic()->handle());
 
+$router->get('/logout', static fn () => new AuthLogout()->handle());
+
 $router->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $_SERVER['REQUEST_URI'] ?? '/');

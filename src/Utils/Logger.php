@@ -26,7 +26,7 @@ class Logger
     {
         $file = dirname(__DIR__, 2).'/logs/'.date('Y-m-d').'/app.log';
 
-        Helper::mkdir($file, true);
+        helper()->mkdir($file, true);
 
         return $file;
     }

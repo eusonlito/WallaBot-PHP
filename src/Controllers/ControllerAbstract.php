@@ -78,15 +78,25 @@ abstract class ControllerAbstract
         $user = Config::key('private', 'auth_user');
         $password = Config::key('private', 'auth_password');
 
+        if (session_status() === PHP_SESSION_NONE) {
+            session_set_cookie_params(60 * 60 * 24 * 365);
+            session_start();
+        }
+
+        if (($_SESSION['authenticated'] ?? false) === true) {
+            return $this;
+        }
+
         if ($this->middlewareAuthBasicIsValid($user, $password)) {
+            $_SESSION['authenticated'] = true;
             return $this;
         }
 
         header('WWW-Authenticate: Basic realm="WallaBot"');
 
-        $this->response(['error' => 'Unauthorized'], 401);
+        http_response_code(401);
 
-        return $this;
+        die('401 Unauthorized');
     }
 
     private function middlewareAuthBasicIsValid(string $user, string $password): bool
