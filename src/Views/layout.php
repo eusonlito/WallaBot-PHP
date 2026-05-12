@@ -346,7 +346,7 @@
         <img id="image-modal-img" src="" class="max-w-full max-h-full object-contain p-4 scale-95 transition-transform duration-300 ease-out z-10" alt="Full Image">
     </div>
 
-    <script src="/js/app.js"></script>
+    <script src="/js/app.js?v=<?= helper()->filemtime('/js/app.js') ?>"></script>
     <script>
         if (window.lucide) window.lucide.createIcons();
     </script>
