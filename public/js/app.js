@@ -86,8 +86,17 @@ function updateImageModalContent() {
     if (counter) counter.textContent = `${modalCurrentIndex + 1}/${modalImages.length}`;
 
     if (modalImages.length > 1) {
-        prevBtn?.classList.remove('hidden');
-        nextBtn?.classList.remove('hidden');
+        if (modalCurrentIndex === 0) {
+            prevBtn?.classList.add('hidden');
+        } else {
+            prevBtn?.classList.remove('hidden');
+        }
+
+        if (modalCurrentIndex === modalImages.length - 1) {
+            nextBtn?.classList.add('hidden');
+        } else {
+            nextBtn?.classList.remove('hidden');
+        }
     } else {
         prevBtn?.classList.add('hidden');
         nextBtn?.classList.add('hidden');
@@ -113,15 +122,19 @@ function closeImageModal() {
 function modalNextImage(e) {
     if(e) e.stopPropagation();
     if (modalImages.length <= 1) return;
-    modalCurrentIndex = (modalCurrentIndex === modalImages.length - 1) ? 0 : modalCurrentIndex + 1;
-    updateImageModalContent();
+    if (modalCurrentIndex < modalImages.length - 1) {
+        modalCurrentIndex++;
+        updateImageModalContent();
+    }
 }
 
 function modalPrevImage(e) {
     if(e) e.stopPropagation();
     if (modalImages.length <= 1) return;
-    modalCurrentIndex = (modalCurrentIndex === 0) ? modalImages.length - 1 : modalCurrentIndex - 1;
-    updateImageModalContent();
+    if (modalCurrentIndex > 0) {
+        modalCurrentIndex--;
+        updateImageModalContent();
+    }
 }
 
 function handleModalKeydown(e) {
@@ -157,18 +170,37 @@ function initCarousels() {
                     dot.classList.replace('bg-white', 'bg-white/50');
                 }
             });
+
+            // Contextually hide/show navigation buttons based on current image boundaries
+            if (currentIndex === 0) {
+                prevBtn.classList.add('invisible');
+            } else {
+                prevBtn.classList.remove('invisible');
+            }
+            if (currentIndex === totalImages - 1) {
+                nextBtn.classList.add('invisible');
+            } else {
+                nextBtn.classList.remove('invisible');
+            }
         };
+
+        // Initialize button visibilities
+        updateCarousel();
 
         prevBtn.addEventListener('click', (e) => {
             e.preventDefault(); // Prevent accidental navigation if wrapped in <a>
-            currentIndex = (currentIndex === 0) ? totalImages - 1 : currentIndex - 1;
-            updateCarousel();
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateCarousel();
+            }
         });
 
         nextBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            currentIndex = (currentIndex === totalImages - 1) ? 0 : currentIndex + 1;
-            updateCarousel();
+            if (currentIndex < totalImages - 1) {
+                currentIndex++;
+                updateCarousel();
+            }
         });
 
         // Touch Swipe Event Listeners for Mobile devices
@@ -188,14 +220,15 @@ function initCarousels() {
             // Make sure it's a horizontal swipe and not a vertical scroll
             if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 40) {
                 e.preventDefault(); // Stop swipe from bubbling or shifting pages
-                if (diffX > 0) {
+                if (diffX > 0 && currentIndex > 0) {
                     // Swipe right -> prev image
-                    currentIndex = (currentIndex === 0) ? totalImages - 1 : currentIndex - 1;
-                } else {
+                    currentIndex--;
+                    updateCarousel();
+                } else if (diffX < 0 && currentIndex < totalImages - 1) {
                     // Swipe left -> next image
-                    currentIndex = (currentIndex === totalImages - 1) ? 0 : currentIndex + 1;
+                    currentIndex++;
+                    updateCarousel();
                 }
-                updateCarousel();
             }
         });
     });
