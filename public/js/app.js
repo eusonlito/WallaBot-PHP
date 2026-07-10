@@ -13,6 +13,33 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('image-modal-next')?.addEventListener('click', modalNextImage);
     document.getElementById('image-modal-prev')?.addEventListener('click', modalPrevImage);
 
+    // Touch Swipe Event Listeners for Fullscreen Lightbox Modal (Zoomed Images)
+    let zoomStartX = 0;
+    let zoomStartY = 0;
+    const zoomModal = document.getElementById('image-modal');
+    
+    zoomModal?.addEventListener('touchstart', (e) => {
+        zoomStartX = e.touches[0].clientX;
+        zoomStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    zoomModal?.addEventListener('touchend', (e) => {
+        if (e.changedTouches.length === 0) return;
+        const diffX = e.changedTouches[0].clientX - zoomStartX;
+        const diffY = e.changedTouches[0].clientY - zoomStartY;
+
+        // Check if horizontal swipe exceeds vertical scroll and meets threshold
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 40) {
+            if (diffX > 0) {
+                // Swipe right -> prev image
+                modalPrevImage();
+            } else {
+                // Swipe left -> next image
+                modalNextImage();
+            }
+        }
+    });
+
     document.getElementById('search-form')?.addEventListener('submit', function() {
         const btn = document.getElementById('btn-submit-search');
         if (btn) {
@@ -142,6 +169,34 @@ function initCarousels() {
             e.preventDefault();
             currentIndex = (currentIndex === totalImages - 1) ? 0 : currentIndex + 1;
             updateCarousel();
+        });
+
+        // Touch Swipe Event Listeners for Mobile devices
+        let startX = 0;
+        let startY = 0;
+
+        carousel.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        }, { passive: true });
+
+        carousel.addEventListener('touchend', (e) => {
+            if (e.changedTouches.length === 0) return;
+            const diffX = e.changedTouches[0].clientX - startX;
+            const diffY = e.changedTouches[0].clientY - startY;
+
+            // Make sure it's a horizontal swipe and not a vertical scroll
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 40) {
+                e.preventDefault(); // Stop swipe from bubbling or shifting pages
+                if (diffX > 0) {
+                    // Swipe right -> prev image
+                    currentIndex = (currentIndex === 0) ? totalImages - 1 : currentIndex - 1;
+                } else {
+                    // Swipe left -> next image
+                    currentIndex = (currentIndex === totalImages - 1) ? 0 : currentIndex + 1;
+                }
+                updateCarousel();
+            }
         });
     });
 }

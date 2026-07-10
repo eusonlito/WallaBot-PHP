@@ -6,7 +6,7 @@ db/*
 !logs/.gitkeep
 !db/.gitkeep
 
-# OS / Develop
+*.sh
 .DS_Store
 .vscode/
 Thumbs.db
