@@ -38,7 +38,8 @@ class SearchSave extends ControllerAbstract
             'longitude' => $this->getInputFloat('longitude'),
             'is_shippable' => $this->getInputBool('is_shippable') ? 1 : ($this->getInput('is_shippable') === null ? null : 0),
             'extra_filters' => !empty($extra) ? json_encode($extra, JSON_UNESCAPED_SLASHES) : null,
-            'active' => $this->getInputInt('active', 1),
+            'active' => $this->getInput('active') !== null ? 1 : 0,
+            'title_only' => $this->getInput('title_only') !== null ? 1 : 0,
         ];
 
         if ($id) {

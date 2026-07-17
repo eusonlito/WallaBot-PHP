@@ -1,0 +1,1 @@
+ALTER TABLE `search` ADD COLUMN `title_only` INTEGER DEFAULT 1;

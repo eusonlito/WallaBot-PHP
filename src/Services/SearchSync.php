@@ -48,10 +48,12 @@ class SearchSync
                 $normalizedTitle = helper()->normalize($title);
                 $isValid = true;
 
-                foreach ($searchKeywords as $kw) {
-                    if (str_contains($normalizedTitle, $kw) === false) {
-                        $isValid = false;
-                        break;
+                if (!isset($search->title_only) || $search->title_only) {
+                    foreach ($searchKeywords as $kw) {
+                        if (str_contains($normalizedTitle, $kw) === false) {
+                            $isValid = false;
+                            break;
+                        }
                     }
                 }
 

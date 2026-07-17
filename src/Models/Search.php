@@ -17,6 +17,7 @@ class Search extends ModelAbstract
     public ?int $is_shippable;
     public ?string $extra_filters;
     public int $active;
+    public int $title_only;
     public string $created_at;
     public string $updated_at;
 
@@ -32,6 +33,7 @@ class Search extends ModelAbstract
             'longitude' => $data['longitude'] ?? null,
             'is_shippable' => $data['is_shippable'] ?? null,
             'extra_filters' => $data['extra_filters'] ?? null,
+            'title_only' => isset($data['title_only']) ? (int)$data['title_only'] : 1,
         ]);
 
         return static::findOrFail($id);
@@ -40,8 +42,8 @@ class Search extends ModelAbstract
     private static function createSql(): string
     {
         return <<<'SQL'
-            INSERT INTO `search` (`keywords`, `category_ids`, `price_min`, `price_max`, `distance`, `latitude`, `longitude`, `is_shippable`, `extra_filters`)
-            VALUES (:keywords, :category_ids, :price_min, :price_max, :distance, :latitude, :longitude, :is_shippable, :extra_filters)
+            INSERT INTO `search` (`keywords`, `category_ids`, `price_min`, `price_max`, `distance`, `latitude`, `longitude`, `is_shippable`, `extra_filters`, `title_only`)
+            VALUES (:keywords, :category_ids, :price_min, :price_max, :distance, :latitude, :longitude, :is_shippable, :extra_filters, :title_only)
             ON CONFLICT(`keywords`) DO UPDATE SET
                 `category_ids` = excluded.`category_ids`,
                 `price_min` = excluded.`price_min`,
@@ -51,6 +53,7 @@ class Search extends ModelAbstract
                 `longitude` = excluded.`longitude`,
                 `is_shippable` = excluded.`is_shippable`,
                 `extra_filters` = excluded.`extra_filters`,
+                `title_only` = excluded.`title_only`,
                 `active` = 1,
                 `updated_at` = CURRENT_TIMESTAMP
         SQL;

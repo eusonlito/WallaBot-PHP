@@ -281,6 +281,8 @@ function openSearchModal() {
     document.getElementById('search-form').reset();
     document.getElementById('field-id').value = '';
     document.getElementById('field-active').checked = true;
+    const titleOnlyField = document.getElementById('field-title_only');
+    if (titleOnlyField) titleOnlyField.checked = true;
     
     // Manual reset of checkboxes as .reset() might not catch all
     document.querySelectorAll('.ef-check').forEach(c => c.checked = false);
@@ -319,6 +321,10 @@ function editSearch(id) {
 
     document.getElementById('field-id').value = s.id;
     document.getElementById('field-active').checked = !!s.active;
+    const titleOnlyField = document.getElementById('field-title_only');
+    if (titleOnlyField) {
+        titleOnlyField.checked = s.title_only !== undefined ? !!s.title_only : true;
+    }
     document.getElementById('field-keywords').value = s.keywords;
     document.getElementById('field-price_min').value = s.price_min || '';
     document.getElementById('field-price_max').value = s.price_max || '';

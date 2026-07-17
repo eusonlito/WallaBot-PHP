@@ -296,13 +296,23 @@
                     <!-- ESTADO -->
                     <div class="space-y-4 pt-6 border-t border-slate-100">
                         <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ESTADO</h3>
-                        <label class="flex items-center gap-3 cursor-pointer group w-fit">
-                            <div class="relative flex items-center">
-                                <input type="checkbox" name="active" value="1" id="field-active" class="peer sr-only" checked>
-                                <div class="w-10 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
-                            </div>
-                            <span class="text-sm font-bold text-slate-900 select-none">Búsqueda activa</span>
-                        </label>
+                        <div class="flex flex-col gap-4 sm:flex-row sm:gap-8">
+                            <label class="flex items-center gap-3 cursor-pointer group w-fit">
+                                <div class="relative flex items-center">
+                                    <input type="checkbox" name="active" value="1" id="field-active" class="peer sr-only" checked>
+                                    <div class="w-10 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                                </div>
+                                <span class="text-sm font-bold text-slate-900 select-none">Búsqueda activa</span>
+                            </label>
+
+                            <label class="flex items-center gap-3 cursor-pointer group w-fit">
+                                <div class="relative flex items-center">
+                                    <input type="checkbox" name="title_only" value="1" id="field-title_only" class="peer sr-only" checked>
+                                    <div class="w-10 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                                </div>
+                                <span class="text-sm font-bold text-slate-900 select-none">Solo en título</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
