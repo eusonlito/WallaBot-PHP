@@ -18,6 +18,7 @@ class Search extends ModelAbstract
     public ?string $extra_filters;
     public int $active;
     public int $title_only;
+    public ?string $exclude_keywords;
     public string $created_at;
     public string $updated_at;
 
@@ -34,6 +35,7 @@ class Search extends ModelAbstract
             'is_shippable' => $data['is_shippable'] ?? null,
             'extra_filters' => $data['extra_filters'] ?? null,
             'title_only' => isset($data['title_only']) ? (int)$data['title_only'] : 1,
+            'exclude_keywords' => $data['exclude_keywords'] ?? null,
         ]);
 
         return static::findOrFail($id);
@@ -42,8 +44,8 @@ class Search extends ModelAbstract
     private static function createSql(): string
     {
         return <<<'SQL'
-            INSERT INTO `search` (`keywords`, `category_ids`, `price_min`, `price_max`, `distance`, `latitude`, `longitude`, `is_shippable`, `extra_filters`, `title_only`)
-            VALUES (:keywords, :category_ids, :price_min, :price_max, :distance, :latitude, :longitude, :is_shippable, :extra_filters, :title_only)
+            INSERT INTO `search` (`keywords`, `category_ids`, `price_min`, `price_max`, `distance`, `latitude`, `longitude`, `is_shippable`, `extra_filters`, `title_only`, `exclude_keywords`)
+            VALUES (:keywords, :category_ids, :price_min, :price_max, :distance, :latitude, :longitude, :is_shippable, :extra_filters, :title_only, :exclude_keywords)
             ON CONFLICT(`keywords`) DO UPDATE SET
                 `category_ids` = excluded.`category_ids`,
                 `price_min` = excluded.`price_min`,
@@ -54,6 +56,7 @@ class Search extends ModelAbstract
                 `is_shippable` = excluded.`is_shippable`,
                 `extra_filters` = excluded.`extra_filters`,
                 `title_only` = excluded.`title_only`,
+                `exclude_keywords` = excluded.`exclude_keywords`,
                 `active` = 1,
                 `updated_at` = CURRENT_TIMESTAMP
         SQL;

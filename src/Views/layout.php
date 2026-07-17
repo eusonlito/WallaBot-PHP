@@ -85,6 +85,10 @@
                             <label class="text-sm font-semibold text-slate-700">Palabras clave <span class="text-rose-500">*</span></label>
                             <input type="text" name="keywords" id="field-keywords" required class="w-full h-11 px-4 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 transition-shadow" placeholder="ej. Audi A5">
                         </div>
+                        <div class="space-y-1.5">
+                            <label class="text-sm font-semibold text-slate-700">Palabras excluidas</label>
+                            <input type="text" name="exclude_keywords" id="field-exclude_keywords" class="w-full h-11 px-4 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 transition-shadow" placeholder="ej. roto, averiado, piezas, despiece (separadas por comas)">
+                        </div>
                     </div>
 
                     <!-- FILTROS -->

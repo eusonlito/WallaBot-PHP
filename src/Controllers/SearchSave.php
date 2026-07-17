@@ -40,6 +40,7 @@ class SearchSave extends ControllerAbstract
             'extra_filters' => !empty($extra) ? json_encode($extra, JSON_UNESCAPED_SLASHES) : null,
             'active' => $this->getInput('active') !== null ? 1 : 0,
             'title_only' => $this->getInput('title_only') !== null ? 1 : 0,
+            'exclude_keywords' => $this->getInputString('exclude_keywords'),
         ];
 
         if ($id) {

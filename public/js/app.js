@@ -326,6 +326,7 @@ function editSearch(id) {
         titleOnlyField.checked = s.title_only !== undefined ? !!s.title_only : true;
     }
     document.getElementById('field-keywords').value = s.keywords;
+    document.getElementById('field-exclude_keywords').value = s.exclude_keywords || '';
     document.getElementById('field-price_min').value = s.price_min || '';
     document.getElementById('field-price_max').value = s.price_max || '';
     document.getElementById('field-category_ids').value = s.category_ids || '';

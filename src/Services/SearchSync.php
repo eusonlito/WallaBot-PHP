@@ -43,6 +43,11 @@ class SearchSync
             $maxDistanceKm = isset($search->distance) && is_numeric($search->distance) ? (float)$search->distance : null;
             $hasLocation = !empty($search->latitude) && !empty($search->longitude);
 
+            $excludeKeywords = [];
+            if (!empty($search->exclude_keywords)) {
+                $excludeKeywords = array_filter(array_map('trim', explode(',', helper()->normalize($search->exclude_keywords))));
+            }
+
             foreach ($items as $data) {
                 $title = (string)$data['title'];
                 $normalizedTitle = helper()->normalize($title);
@@ -51,6 +56,19 @@ class SearchSync
                 if (!isset($search->title_only) || $search->title_only) {
                     foreach ($searchKeywords as $kw) {
                         if (str_contains($normalizedTitle, $kw) === false) {
+                            $isValid = false;
+                            break;
+                        }
+                    }
+                }
+
+                if ($isValid && !empty($excludeKeywords)) {
+                    $description = (string)($data['description'] ?? '');
+                    $normalizedDesc = helper()->normalize($description);
+                    $fullText = $normalizedTitle . ' ' . $normalizedDesc;
+
+                    foreach ($excludeKeywords as $exc) {
+                        if (str_contains($fullText, $exc)) {
                             $isValid = false;
                             break;
                         }
