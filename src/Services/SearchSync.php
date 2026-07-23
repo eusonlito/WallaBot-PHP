@@ -45,7 +45,7 @@ class SearchSync
 
             $excludeKeywords = [];
             if (!empty($search->exclude_keywords)) {
-                $excludeKeywords = array_filter(array_map('trim', explode(',', helper()->normalize($search->exclude_keywords))));
+                $excludeKeywords = array_filter(preg_split('/[\s,;]+/', helper()->normalize($search->exclude_keywords)));
             }
 
             foreach ($items as $data) {
