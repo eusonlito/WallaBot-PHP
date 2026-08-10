@@ -3,6 +3,7 @@
 require __DIR__.'/../autoload.php';
 
 use App\Models\Search;
+use App\Services\SearchSync;
 use App\Utils\Console;
 
 $options = getopt('', ['id:', 'keywords:', 'category-ids:', 'price-min:', 'price-max:', 'distance:', 'latitude:', 'longitude:', 'shippable:', 'active:']);
@@ -69,5 +70,6 @@ if (empty($update)) {
     exit;
 }
 
-$search->update($update);
+$search = $search->update($update);
+new SearchSync()->sync($search, false, true);
 Console::success('Búsqueda actualizada con éxito.');

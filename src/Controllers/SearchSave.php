@@ -46,7 +46,7 @@ class SearchSave extends ControllerAbstract
         if ($id) {
             $search = Search::findOrFail($id)->update($data);
 
-            new SearchSync()->sync($search, false);
+            new SearchSync()->sync($search, false, true);
 
             $this->redirect('/searches');
         }

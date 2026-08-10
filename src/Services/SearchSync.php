@@ -34,7 +34,7 @@ class SearchSync
         return $earthRadius * $c;
     }
 
-    public function sync(Search $search, bool $notify = true): void
+    public function sync(Search $search, bool $notify = true, bool $removeNonMatchingItems = false): void
     {
         try {
             $items = $this->wallapop->search($search);
@@ -47,6 +47,8 @@ class SearchSync
             if (!empty($search->exclude_keywords)) {
                 $excludeKeywords = array_filter(preg_split('/[\s,;]+/', helper()->normalize($search->exclude_keywords)));
             }
+
+            $matchingWallapopIds = [];
 
             foreach ($items as $data) {
                 $title = (string)$data['title'];
@@ -90,6 +92,7 @@ class SearchSync
                 }
 
                 $wallapopId = (string)$data['id'];
+                $matchingWallapopIds[] = $wallapopId;
                 $price = (float)$data['price']['amount'];
                 $title = (string)$data['title'];
                 $urlSlug = (string)$data['web_slug'];
@@ -144,6 +147,10 @@ class SearchSync
                         Logger::info("Price drop: {$wallapopId} - {$title}");
                     }
                 }
+            }
+
+            if ($removeNonMatchingItems) {
+                Item::deleteBySearchExceptWallapopIds($search->id, $matchingWallapopIds);
             }
         } catch (Throwable $e) {
             Error::report($e);

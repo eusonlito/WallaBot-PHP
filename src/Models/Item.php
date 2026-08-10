@@ -44,6 +44,34 @@ class Item extends ModelAbstract
         return $row ? new self($row) : null;
     }
 
+    /**
+     * Removes the items that are no longer part of a refreshed search result.
+     *
+     * @param string[] $wallapopIds
+     */
+    public static function deleteBySearchExceptWallapopIds(int $searchId, array $wallapopIds): void
+    {
+        $params = ['search_id' => $searchId];
+
+        if (empty($wallapopIds)) {
+            self::database()->execute('DELETE FROM `item` WHERE `search_id` = :search_id', $params);
+
+            return;
+        }
+
+        $placeholders = [];
+        foreach (array_values(array_unique($wallapopIds)) as $index => $wallapopId) {
+            $placeholder = ':wallapop_id_'.$index;
+            $placeholders[] = $placeholder;
+            $params[substr($placeholder, 1)] = $wallapopId;
+        }
+
+        self::database()->execute(
+            'DELETE FROM `item` WHERE `search_id` = :search_id AND `wallapop_id` NOT IN ('.implode(', ', $placeholders).')',
+            $params
+        );
+    }
+
     public static function findOrFail(int $id): self
     {
         $row = self::database()->selectOne("SELECT * FROM `item` WHERE `id` = :id", ['id' => $id]);
