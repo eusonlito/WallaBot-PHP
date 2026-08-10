@@ -19,6 +19,8 @@ class Item extends ModelAbstract
     public ?string $location_postal_code;
     public ?string $location_region;
     public ?string $location_country;
+    public ?float $location_latitude;
+    public ?float $location_longitude;
     public int $is_shippable;
     public int $is_bumped;
     public int $is_refurbished;
@@ -44,32 +46,129 @@ class Item extends ModelAbstract
         return $row ? new self($row) : null;
     }
 
-    /**
-     * Removes the items that are no longer part of a refreshed search result.
-     *
-     * @param string[] $wallapopIds
-     */
-    public static function deleteBySearchExceptWallapopIds(int $searchId, array $wallapopIds): void
+    public static function removeItemsNotMatchingSearch(Search $search): void
     {
-        $params = ['search_id' => $searchId];
+        $rows = self::database()->select('SELECT * FROM `item` WHERE `search_id` = :search_id', ['search_id' => $search->id]);
 
-        if (empty($wallapopIds)) {
-            self::database()->execute('DELETE FROM `item` WHERE `search_id` = :search_id', $params);
+        foreach ($rows as $row) {
+            $item = new self($row);
 
-            return;
+            if (self::matchesSearch($item, $search)) {
+                continue;
+            }
+
+            self::database()->execute('DELETE FROM `item` WHERE `id` = :id', ['id' => $item->id]);
+        }
+    }
+
+    private static function matchesSearch(self $item, Search $search): bool
+    {
+        $title = helper()->normalize($item->title);
+        $description = helper()->normalize((string)$item->description);
+        $text = $search->title_only ? $title : $title.' '.$description;
+
+        foreach (array_filter(explode(' ', helper()->normalize($search->keywords))) as $keyword) {
+            if (str_contains($text, $keyword) === false) {
+                return false;
+            }
         }
 
-        $placeholders = [];
-        foreach (array_values(array_unique($wallapopIds)) as $index => $wallapopId) {
-            $placeholder = ':wallapop_id_'.$index;
-            $placeholders[] = $placeholder;
-            $params[substr($placeholder, 1)] = $wallapopId;
+        if (!empty($search->exclude_keywords)) {
+            foreach (array_filter(preg_split('/[\s,;]+/', helper()->normalize($search->exclude_keywords))) as $keyword) {
+                if (str_contains($title.' '.$description, $keyword)) {
+                    return false;
+                }
+            }
         }
 
-        self::database()->execute(
-            'DELETE FROM `item` WHERE `search_id` = :search_id AND `wallapop_id` NOT IN ('.implode(', ', $placeholders).')',
-            $params
-        );
+        if (($search->price_min !== null && $item->price < $search->price_min)
+            || ($search->price_max !== null && $item->price > $search->price_max)
+            || ($search->is_shippable !== null && $item->is_shippable !== $search->is_shippable)) {
+            return false;
+        }
+
+        if (!empty($search->category_ids)) {
+            $categoryIds = array_filter(explode(',', $search->category_ids));
+            if (!in_array((string)$item->category_id, $categoryIds, true)) {
+                return false;
+            }
+        }
+
+        if (!self::matchesDistance($item, $search)) {
+            return false;
+        }
+
+        return self::matchesExtraFilters($item, $search);
+    }
+
+    private static function matchesDistance(self $item, Search $search): bool
+    {
+        if (empty($search->latitude) || empty($search->longitude) || !is_numeric($search->distance)
+            || $item->location_latitude === null || $item->location_longitude === null) {
+            return true;
+        }
+
+        $earthRadius = 6371;
+        $latDiff = deg2rad($item->location_latitude - $search->latitude);
+        $lonDiff = deg2rad($item->location_longitude - $search->longitude);
+        $a = sin($latDiff / 2) ** 2
+            + cos(deg2rad($search->latitude)) * cos(deg2rad($item->location_latitude)) * sin($lonDiff / 2) ** 2;
+
+        return $earthRadius * 2 * atan2(sqrt($a), sqrt(1 - $a)) <= (float)$search->distance;
+    }
+
+    private static function matchesExtraFilters(self $item, Search $search): bool
+    {
+        $filters = json_decode((string)$search->extra_filters, true);
+        if (empty($filters) || !is_array($filters)) {
+            return true;
+        }
+
+        $attributes = json_decode((string)$item->type_attributes, true);
+        if (!is_array($attributes)) {
+            return false;
+        }
+
+        foreach ($filters as $key => $value) {
+            $attributeKey = match ($key) {
+                'min_year', 'max_year' => 'year',
+                'max_km' => 'km',
+                default => $key,
+            };
+            $attribute = $attributes[$attributeKey] ?? null;
+
+            if ($attribute === null) {
+                return false;
+            }
+
+            if ($key === 'min_year' || $key === 'rooms' || $key === 'bathrooms') {
+                if ((float)$attribute < (float)$value) {
+                    return false;
+                }
+            } elseif ($key === 'max_year' || $key === 'max_km') {
+                if ((float)$attribute > (float)$value) {
+                    return false;
+                }
+            } elseif (!self::matchesAttributeValue($attribute, $value)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static function matchesAttributeValue(mixed $attribute, mixed $filter): bool
+    {
+        $values = is_array($attribute) ? $attribute : explode(',', (string)$attribute);
+        $expected = array_filter(explode(',', (string)$filter));
+
+        foreach ($values as $value) {
+            if (in_array(helper()->normalize((string)$value), array_map(static fn(string $expectedValue) => helper()->normalize($expectedValue), $expected), true)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static function findOrFail(int $id): self
@@ -117,6 +216,8 @@ class Item extends ModelAbstract
             'location_postal_code' => $data['location_postal_code'] ?? null,
             'location_region' => $data['location_region'] ?? null,
             'location_country' => $data['location_country'] ?? null,
+            'location_latitude' => $data['location_latitude'] ?? null,
+            'location_longitude' => $data['location_longitude'] ?? null,
             'is_shippable' => !empty($data['is_shippable']) ? 1 : 0,
             'is_bumped' => !empty($data['is_bumped']) ? 1 : 0,
             'is_refurbished' => !empty($data['is_refurbished']) ? 1 : 0,
@@ -136,12 +237,12 @@ class Item extends ModelAbstract
         return <<<'SQL'
             INSERT INTO `item` (
                 `search_id`, `wallapop_id`, `title`, `description`, `price`, `currency`, `url`, `images`,
-                `location_city`, `location_postal_code`, `location_region`, `location_country`,
+                `location_city`, `location_postal_code`, `location_region`, `location_country`, `location_latitude`, `location_longitude`,
                 `is_shippable`, `is_bumped`, `is_refurbished`, `has_warranty`, `category_id`,
                 `wallapop_created_at`, `wallapop_modified_at`, `user_id`, `type_attributes`, `is_favorite`, `is_hidden`
             ) VALUES (
                 :search_id, :wallapop_id, :title, :description, :price, :currency, :url, :images,
-                :location_city, :location_postal_code, :location_region, :location_country,
+                :location_city, :location_postal_code, :location_region, :location_country, :location_latitude, :location_longitude,
                 :is_shippable, :is_bumped, :is_refurbished, :has_warranty, :category_id,
                 :wallapop_created_at, :wallapop_modified_at, :user_id, :type_attributes, 0, 0
             )

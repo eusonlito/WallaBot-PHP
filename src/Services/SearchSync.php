@@ -34,7 +34,7 @@ class SearchSync
         return $earthRadius * $c;
     }
 
-    public function sync(Search $search, bool $notify = true, bool $removeNonMatchingItems = false): void
+    public function sync(Search $search, bool $notify = true, bool $revalidateAssociatedItems = false): void
     {
         try {
             $items = $this->wallapop->search($search);
@@ -47,8 +47,6 @@ class SearchSync
             if (!empty($search->exclude_keywords)) {
                 $excludeKeywords = array_filter(preg_split('/[\s,;]+/', helper()->normalize($search->exclude_keywords)));
             }
-
-            $matchingWallapopIds = [];
 
             foreach ($items as $data) {
                 $title = (string)$data['title'];
@@ -92,7 +90,6 @@ class SearchSync
                 }
 
                 $wallapopId = (string)$data['id'];
-                $matchingWallapopIds[] = $wallapopId;
                 $price = (float)$data['price']['amount'];
                 $title = (string)$data['title'];
                 $urlSlug = (string)$data['web_slug'];
@@ -113,6 +110,8 @@ class SearchSync
                         'location_postal_code' => $data['location']['postal_code'] ?? null,
                         'location_region' => $data['location']['region'] ?? null,
                         'location_country' => $data['location']['country_code'] ?? null,
+                        'location_latitude' => $itemLat,
+                        'location_longitude' => $itemLon,
                         'is_shippable' => $data['shipping']['item_is_shippable'] ?? false,
                         'is_bumped' => isset($data['bump']['type']) && $data['bump']['type'] !== 'none',
                         'is_refurbished' => $data['is_refurbished']['flag'] ?? false,
@@ -149,8 +148,8 @@ class SearchSync
                 }
             }
 
-            if ($removeNonMatchingItems) {
-                Item::deleteBySearchExceptWallapopIds($search->id, $matchingWallapopIds);
+            if ($revalidateAssociatedItems) {
+                Item::removeItemsNotMatchingSearch($search);
             }
         } catch (Throwable $e) {
             Error::report($e);
