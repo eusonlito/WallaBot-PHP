@@ -297,6 +297,51 @@ function openSearchModal() {
     content.classList.add('opacity-100', 'scale-100');
 }
 
+function openGeneralSearchModal(keepValues = false) {
+    const form = document.getElementById('search-form');
+    const title = document.getElementById('modal-title');
+    const submit = document.getElementById('btn-submit-search');
+    const deleteBtn = document.getElementById('btn-delete-search');
+
+    if (!keepValues) form?.reset();
+    if (title) title.innerText = 'Buscar en Wallapop';
+    if (submit) submit.innerText = 'Buscar';
+    if (deleteBtn) deleteBtn.classList.add('hidden');
+    if (keepValues && typeof generalSearchData !== 'undefined') populateSearchForm(generalSearchData);
+    toggleExtraFilters();
+
+    const container = document.getElementById('modal-container');
+    const content = document.getElementById('modal-content');
+    container?.classList.remove('invisible', 'opacity-0');
+    container?.classList.add('opacity-100');
+    content?.classList.remove('opacity-0', 'scale-95');
+    content?.classList.add('opacity-100', 'scale-100');
+}
+
+function populateSearchForm(search) {
+    document.getElementById('field-keywords').value = search.keywords || '';
+    document.getElementById('field-exclude_keywords').value = search.exclude_keywords || '';
+    document.getElementById('field-price_min').value = search.price_min || '';
+    document.getElementById('field-price_max').value = search.price_max || '';
+    document.getElementById('field-category_ids').value = search.category_ids || '';
+    document.getElementById('field-distance').value = search.distance || '400';
+    document.getElementById('field-latitude').value = search.latitude || '';
+    document.getElementById('field-longitude').value = search.longitude || '';
+    document.getElementById('field-is_shippable').checked = !!search.is_shippable;
+    document.getElementById('field-title_only').checked = !!search.title_only;
+    toggleExtraFilters();
+
+    if (!search.extra_filters) return;
+    try {
+        const extra = JSON.parse(search.extra_filters);
+        for (const key in extra) {
+            const input = document.getElementById('ef-' + key);
+            if (input) input.value = extra[key];
+            else document.querySelectorAll(`[name="extra_filters[${key}][]"]`).forEach(check => check.checked = extra[key].split(',').includes(check.value));
+        }
+    } catch (e) {}
+}
+
 function closeSearchModal() {
     const container = document.getElementById('modal-container');
     const content = document.getElementById('modal-content');

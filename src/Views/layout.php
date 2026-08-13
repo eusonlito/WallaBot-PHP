@@ -65,17 +65,18 @@
     </div>
 
     <!-- Modal Form -->
-    <?php if ($page === 'searches'): ?>
+    <?php $isSavedSearchForm = $page === 'searches'; ?>
+    <?php if ($isSavedSearchForm || $page === 'general-search' || $page === 'results'): ?>
     <div id="modal-container" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm invisible opacity-0 transition-all duration-200 overflow-y-auto py-4">
         <div id="modal-content" class="relative w-full max-w-xl bg-white shadow-2xl rounded-2xl overflow-hidden transform opacity-0 scale-95 transition-all duration-200 my-auto">
             <div class="px-6 py-4 border-b flex items-center justify-between bg-white">
                 <div>
-                    <h2 id="modal-title" class="text-lg font-bold text-slate-900">Nueva búsqueda</h2>
+                    <h2 id="modal-title" class="text-lg font-bold text-slate-900"><?= $isSavedSearchForm ? 'Nueva búsqueda' : 'Buscar en Wallapop' ?></h2>
                 </div>
                 <button type="button" onclick="closeSearchModal()" class="text-slate-400 hover:text-slate-600 transition-colors text-2xl leading-none">&times;</button>
             </div>
 
-            <form id="search-form" method="POST" action="/searches/save" class="m-0 flex flex-col overflow-hidden max-h-[calc(100vh-8rem)]">
+            <form id="search-form" method="<?= $isSavedSearchForm ? 'POST' : 'GET' ?>" action="<?= $isSavedSearchForm ? '/searches/save' : '/explore' ?>" class="m-0 flex flex-col overflow-hidden max-h-[calc(100vh-8rem)]">
                 <input type="hidden" name="id" id="field-id">
 
                 <div class="p-8 overflow-y-auto custom-scrollbar flex-1 space-y-2">
@@ -268,7 +269,7 @@
                             <div class="space-y-1.5">
                                 <label class="text-sm font-semibold text-slate-700">Distancia máxima</label>
                                 <div class="relative">
-                                    <input type="text" name="distance" id="field-distance" class="w-full h-11 pl-4 pr-10 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 transition-shadow" placeholder="400">
+                                    <input type="text" name="distance" id="field-distance" value="400" class="w-full h-11 pl-4 pr-10 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 transition-shadow" placeholder="400">
                                     <span class="absolute right-4 top-3 text-slate-400 text-xs font-medium">km</span>
                                 </div>
                             </div>
@@ -298,7 +299,7 @@
                     </div>
 
                     <!-- ESTADO -->
-                    <div class="space-y-4 pt-6 border-t border-slate-100">
+                    <?php if ($isSavedSearchForm): ?><div class="space-y-4 pt-6 border-t border-slate-100">
                         <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ESTADO</h3>
                         <div class="flex flex-col gap-4 sm:flex-row sm:gap-8">
                             <label class="flex items-center gap-3 cursor-pointer group w-fit">
@@ -317,7 +318,16 @@
                                 <span class="text-sm font-bold text-slate-900 select-none">Solo en título</span>
                             </label>
                         </div>
-                    </div>
+                    </div><?php else: ?>
+                    <div class="pt-6 border-t border-slate-100">
+                        <label class="flex items-center gap-3 cursor-pointer group w-fit">
+                            <div class="relative flex items-center">
+                                <input type="checkbox" name="title_only" value="1" id="field-title_only" class="peer sr-only" checked>
+                                <div class="w-10 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                            </div>
+                            <span class="text-sm font-bold text-slate-900 select-none">Solo en título</span>
+                        </label>
+                    </div><?php endif; ?>
                 </div>
 
                 <!-- Footer -->
@@ -327,14 +337,15 @@
                     </button>
                     <div class="flex gap-2 sm:gap-3 ml-auto">
                         <button type="button" onclick="closeSearchModal()" class="h-10 sm:h-11 px-4 sm:px-6 rounded-xl border border-slate-200 text-sm font-bold text-slate-600 bg-white hover:bg-slate-50 hover:text-slate-900 transition-colors shadow-sm">Cancelar</button>
-                        <button type="submit" id="btn-submit-search" class="h-10 sm:h-11 px-4 sm:px-6 rounded-xl bg-black text-white text-sm font-bold hover:bg-slate-800 transition-colors shadow-md">Guardar</button>
+                        <button type="submit" id="btn-submit-search" class="h-10 sm:h-11 px-4 sm:px-6 rounded-xl bg-black text-white text-sm font-bold hover:bg-slate-800 transition-colors shadow-md"><?= $isSavedSearchForm ? 'Guardar' : 'Buscar' ?></button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
     <script>
-        const searchesData = <?= json_encode($searches) ?>;
+        <?php if ($isSavedSearchForm): ?>const searchesData = <?= json_encode($searches) ?>;<?php endif; ?>
+        <?php if ($page === 'general-search' && $search !== null): ?>const generalSearchData = <?= json_encode($search) ?>;<?php endif; ?>
     </script>
     <?php endif; ?>
 

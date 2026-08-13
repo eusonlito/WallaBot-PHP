@@ -34,60 +34,52 @@ class SearchSync
         return $earthRadius * $c;
     }
 
+    public function filterItems(Search $search, array $items): array
+    {
+        $searchKeywords = array_filter(explode(' ', helper()->normalize($search->keywords)));
+        $maxDistanceKm = isset($search->distance) && is_numeric($search->distance) ? (float)$search->distance : null;
+        $hasLocation = !empty($search->latitude) && !empty($search->longitude);
+        $excludeKeywords = !empty($search->exclude_keywords)
+            ? array_filter(preg_split('/[\s,;]+/', helper()->normalize($search->exclude_keywords)))
+            : [];
+
+        return array_values(array_filter($items, function (array $data) use ($search, $searchKeywords, $maxDistanceKm, $hasLocation, $excludeKeywords): bool {
+            $title = (string)($data['title'] ?? '');
+            $normalizedTitle = helper()->normalize($title);
+
+            if (!isset($search->title_only) || $search->title_only) {
+                foreach ($searchKeywords as $keyword) {
+                    if (!str_contains($normalizedTitle, $keyword)) {
+                        return false;
+                    }
+                }
+            }
+
+            if (!empty($excludeKeywords)) {
+                $text = $normalizedTitle.' '.helper()->normalize((string)($data['description'] ?? ''));
+                foreach ($excludeKeywords as $keyword) {
+                    if (str_contains($text, $keyword)) {
+                        return false;
+                    }
+                }
+            }
+
+            $itemLat = $data['location']['latitude'] ?? null;
+            $itemLon = $data['location']['longitude'] ?? null;
+
+            return !$hasLocation || $maxDistanceKm === null || $itemLat === null || $itemLon === null
+                || $this->calculateDistance((float)$search->latitude, (float)$search->longitude, (float)$itemLat, (float)$itemLon) <= $maxDistanceKm;
+        }));
+    }
+
     public function sync(Search $search, bool $notify = true, bool $revalidateAssociatedItems = false): void
     {
         try {
             $items = $this->wallapop->search($search);
 
-            $searchKeywords = array_filter(explode(' ', helper()->normalize($search->keywords)));
-            $maxDistanceKm = isset($search->distance) && is_numeric($search->distance) ? (float)$search->distance : null;
-            $hasLocation = !empty($search->latitude) && !empty($search->longitude);
-
-            $excludeKeywords = [];
-            if (!empty($search->exclude_keywords)) {
-                $excludeKeywords = array_filter(preg_split('/[\s,;]+/', helper()->normalize($search->exclude_keywords)));
-            }
-
-            foreach ($items as $data) {
-                $title = (string)$data['title'];
-                $normalizedTitle = helper()->normalize($title);
-                $isValid = true;
-
-                if (!isset($search->title_only) || $search->title_only) {
-                    foreach ($searchKeywords as $kw) {
-                        if (str_contains($normalizedTitle, $kw) === false) {
-                            $isValid = false;
-                            break;
-                        }
-                    }
-                }
-
-                if ($isValid && !empty($excludeKeywords)) {
-                    $description = (string)($data['description'] ?? '');
-                    $normalizedDesc = helper()->normalize($description);
-                    $fullText = $normalizedTitle . ' ' . $normalizedDesc;
-
-                    foreach ($excludeKeywords as $exc) {
-                        if (str_contains($fullText, $exc)) {
-                            $isValid = false;
-                            break;
-                        }
-                    }
-                }
-
-                if ($isValid === false) {
-                    continue;
-                }
-
-                // Strict Distance Filter
+            foreach ($this->filterItems($search, $items) as $data) {
                 $itemLat = $data['location']['latitude'] ?? null;
                 $itemLon = $data['location']['longitude'] ?? null;
-                if ($hasLocation && $maxDistanceKm !== null && $itemLat !== null && $itemLon !== null) {
-                    $itemDistance = $this->calculateDistance((float)$search->latitude, (float)$search->longitude, (float)$itemLat, (float)$itemLon);
-                    if ($itemDistance > $maxDistanceKm) {
-                        continue; // Skip items that Wallapop injected from outside the radius
-                    }
-                }
 
                 $wallapopId = (string)$data['id'];
                 $price = (float)$data['price']['amount'];

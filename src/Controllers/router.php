@@ -7,6 +7,7 @@ use App\Utils\Router;
 $router = new Router();
 
 $router->get('/', static fn () => new PageResults()->middlewareAuthBasic()->handle());
+$router->get('/explore', static fn () => new PageGeneralSearch()->middlewareAuthBasic()->handle());
 $router->get('/searches', static fn () => new PageSearches()->middlewareAuthBasic()->handle());
 
 $router->post('/searches/save', static fn () => new SearchSave()->middlewareAuthBasic()->handle());

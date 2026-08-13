@@ -73,6 +73,38 @@ abstract class ControllerAbstract
         return $default;
     }
 
+    protected function searchData(bool $active = false): array
+    {
+        $extra = $this->getInput('extra_filters');
+
+        if (is_array($extra)) {
+            foreach ($extra as $key => $value) {
+                if (is_array($value)) {
+                    $extra[$key] = implode(',', array_filter($value, static fn($item) => $item !== ''));
+                }
+            }
+
+            $extra = array_filter($extra, static fn($value) => $value !== '' && $value !== null);
+        }
+
+        $distance = $this->getInputString('distance');
+
+        return [
+            'keywords' => $this->getInputString('keywords'),
+            'category_ids' => $this->getInputString('category_ids'),
+            'price_min' => $this->getInputFloat('price_min'),
+            'price_max' => $this->getInputFloat('price_max'),
+            'distance' => $distance !== '' && $distance !== null ? $distance : '400',
+            'latitude' => $this->getInputFloat('latitude'),
+            'longitude' => $this->getInputFloat('longitude'),
+            'is_shippable' => $this->getInputBool('is_shippable') ? 1 : ($this->getInput('is_shippable') === null ? null : 0),
+            'extra_filters' => !empty($extra) ? json_encode($extra, JSON_UNESCAPED_SLASHES) : null,
+            'active' => $active && $this->getInput('active') !== null ? 1 : 0,
+            'title_only' => $this->getInput('title_only') !== null ? 1 : 0,
+            'exclude_keywords' => $this->getInputString('exclude_keywords'),
+        ];
+    }
+
     public function middlewareAuthBasic(): self
     {
         $user = Config::key('private', 'auth_user');
