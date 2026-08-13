@@ -2,7 +2,6 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
             <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">Buscar en Wallapop</h1>
-            <p class="mt-2 text-sm text-slate-500">Consulta puntual: los resultados no se guardan ni generan avisos.</p>
         </div>
         <button type="button" onclick="openGeneralSearchModal()" class="inline-flex items-center justify-center rounded-lg bg-black px-5 py-2.5 text-sm font-bold text-white shadow-lg hover:bg-slate-800 transition-all w-full sm:w-auto">
             <i data-lucide="search" class="w-4 h-4 mr-2"></i> Nueva búsqueda

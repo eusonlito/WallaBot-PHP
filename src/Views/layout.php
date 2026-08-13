@@ -48,6 +48,7 @@
                 <div class="flex items-center gap-4 sm:gap-8 h-full shrink-0">
                     <nav class="flex h-full items-center gap-4 sm:gap-8 text-sm font-medium">
                         <a href="/" class="flex h-full items-center px-1 border-b-2 <?= $page === 'results' ? 'border-black text-foreground font-bold' : 'border-transparent text-muted-foreground hover:text-foreground transition-all' ?>">Resultados</a>
+                        <a href="/explore" class="flex h-full items-center px-1 border-b-2 <?= $page === 'general-search' ? 'border-black text-foreground font-bold' : 'border-transparent text-muted-foreground hover:text-foreground transition-all' ?>">Buscar</a>
                         <a href="/searches" class="flex h-full items-center px-1 border-b-2 <?= $page === 'searches' ? 'border-black text-foreground font-bold' : 'border-transparent text-muted-foreground hover:text-foreground transition-all' ?>">Búsquedas</a>
                     </nav>
                     <div class="h-6 w-px bg-slate-200"></div>
@@ -66,7 +67,7 @@
 
     <!-- Modal Form -->
     <?php $isSavedSearchForm = $page === 'searches'; ?>
-    <?php if ($isSavedSearchForm || $page === 'general-search' || $page === 'results'): ?>
+    <?php if ($isSavedSearchForm || $page === 'general-search'): ?>
     <div id="modal-container" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm invisible opacity-0 transition-all duration-200 overflow-y-auto py-4">
         <div id="modal-content" class="relative w-full max-w-xl bg-white shadow-2xl rounded-2xl overflow-hidden transform opacity-0 scale-95 transition-all duration-200 my-auto">
             <div class="px-6 py-4 border-b flex items-center justify-between bg-white">

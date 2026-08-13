@@ -1,6 +1,6 @@
 <section id="section-items">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div class="flex items-center gap-3"><h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 shrink-0">Resultados</h1><button type="button" onclick="openGeneralSearchModal()" class="h-10 px-4 rounded-lg bg-black text-white text-sm font-bold hover:bg-slate-800 transition-colors inline-flex items-center shrink-0"><i data-lucide="search" class="w-4 h-4 mr-2"></i>Buscar</button></div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 shrink-0">Resultados</h1>
         <div class="flex items-center gap-3 overflow-x-auto custom-scrollbar pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0">
             <form id="filter-form" action="/" method="GET" class="flex items-center gap-3 m-0 shrink-0">
                 <label class="flex items-center gap-2 cursor-pointer border border-slate-200 rounded-lg px-3 h-10 bg-white text-sm shadow-sm hover:bg-slate-50 transition-colors shrink-0">
