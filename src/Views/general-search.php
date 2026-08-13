@@ -1,7 +1,12 @@
 <section>
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">Resultados de búsqueda</h1>
-        <button type="button" onclick="openGeneralSearchModal(true)" class="text-sm font-bold text-slate-600 hover:text-black">Modificar filtros</button>
+        <div class="flex items-center gap-4">
+            <button type="button" onclick="openGeneralSearchModal(true)" class="text-sm font-bold text-slate-600 hover:text-black">Modificar filtros</button>
+            <button type="button" onclick="saveGeneralSearch(this)" class="inline-flex h-10 items-center justify-center rounded-lg bg-black px-4 text-sm font-bold text-white shadow-sm transition-colors hover:bg-slate-800">
+                <i data-lucide="bookmark-plus" class="mr-2 h-4 w-4"></i> Guardar búsqueda
+            </button>
+        </div>
     </div>
 
         <p class="mb-6 text-sm text-slate-500"><strong class="text-slate-900"><?= count($items) ?></strong> resultados para “<?= htmlspecialchars($search->keywords) ?>”</p>

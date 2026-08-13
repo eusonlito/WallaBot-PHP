@@ -315,6 +315,23 @@ function openGeneralSearchModal(keepValues = false) {
     content?.classList.add('opacity-100', 'scale-100');
 }
 
+function saveGeneralSearch(button) {
+    if (typeof generalSearchData === 'undefined') return;
+
+    const form = document.getElementById('search-form');
+    if (!form) return;
+
+    form.reset();
+    populateSearchForm(generalSearchData);
+    configureSearchForm('saved');
+    document.getElementById('field-id').value = '';
+
+    button.disabled = true;
+    button.innerText = 'Guardando...';
+    button.classList.add('opacity-50', 'cursor-not-allowed');
+    form.requestSubmit();
+}
+
 function configureSearchForm(mode) {
     const form = document.getElementById('search-form');
     const savedSearchMode = mode === 'saved';
@@ -338,12 +355,12 @@ function setDeleteSearchButtonVisible(visible) {
 function populateSearchForm(search) {
     document.getElementById('field-keywords').value = search.keywords || '';
     document.getElementById('field-exclude_keywords').value = search.exclude_keywords || '';
-    document.getElementById('field-price_min').value = search.price_min || '';
-    document.getElementById('field-price_max').value = search.price_max || '';
+    document.getElementById('field-price_min').value = search.price_min ?? '';
+    document.getElementById('field-price_max').value = search.price_max ?? '';
     document.getElementById('field-category_ids').value = search.category_ids || '';
     document.getElementById('field-distance').value = search.distance || '400';
-    document.getElementById('field-latitude').value = search.latitude || '';
-    document.getElementById('field-longitude').value = search.longitude || '';
+    document.getElementById('field-latitude').value = search.latitude ?? '';
+    document.getElementById('field-longitude').value = search.longitude ?? '';
     document.getElementById('field-is_shippable').checked = !!search.is_shippable;
     document.getElementById('field-title_only').checked = !!search.title_only;
     toggleExtraFilters();
