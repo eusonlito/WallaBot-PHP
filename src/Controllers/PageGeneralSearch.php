@@ -12,22 +12,24 @@ class PageGeneralSearch extends ControllerAbstract
     public function handle(): void
     {
         $keywords = $this->getInputString('keywords');
+
+        if (empty($keywords)) {
+            $this->redirect('/');
+        }
+
         $items = [];
-        $search = null;
         $searchError = null;
 
-        if (!empty($keywords)) {
-            $search = new Search($this->searchData() + [
-                'id' => 0,
-                'created_at' => '',
-                'updated_at' => '',
-            ]);
+        $search = new Search($this->searchData() + [
+            'id' => 0,
+            'created_at' => '',
+            'updated_at' => '',
+        ]);
 
-            try {
-                $items = (new SearchSync())->filterItems($search, (new WallapopClient())->search($search));
-            } catch (Throwable) {
-                $searchError = 'No se pudo completar la búsqueda. Inténtalo de nuevo en unos instantes.';
-            }
+        try {
+            $items = (new SearchSync())->filterItems($search, (new WallapopClient())->search($search));
+        } catch (Throwable) {
+            $searchError = 'No se pudo completar la búsqueda. Inténtalo de nuevo en unos instantes.';
         }
 
         $page = 'general-search';

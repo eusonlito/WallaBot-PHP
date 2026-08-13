@@ -1,21 +1,10 @@
 <section>
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div>
-            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">Buscar en Wallapop</h1>
-        </div>
-        <button type="button" onclick="openGeneralSearchModal()" class="inline-flex items-center justify-center rounded-lg bg-black px-5 py-2.5 text-sm font-bold text-white shadow-lg hover:bg-slate-800 transition-all w-full sm:w-auto">
-            <i data-lucide="search" class="w-4 h-4 mr-2"></i> Nueva búsqueda
-        </button>
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">Resultados de búsqueda</h1>
+        <button type="button" onclick="openGeneralSearchModal(true)" class="text-sm font-bold text-slate-600 hover:text-black">Modificar filtros</button>
     </div>
 
-    <?php if ($search === null): ?>
-        <div class="bg-white rounded-2xl border shadow-sm flex flex-col items-center justify-center py-24 px-4">
-            <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 mb-6 border border-slate-100"><i data-lucide="search" class="w-8 h-8"></i></div>
-            <h2 class="text-xl font-bold text-slate-900 mb-2">¿Qué quieres encontrar?</h2>
-            <button type="button" onclick="openGeneralSearchModal()" class="h-10 px-6 rounded-xl bg-black text-white text-sm font-bold hover:bg-slate-800">Buscar ahora</button>
-        </div>
-    <?php else: ?>
-        <div class="flex items-center justify-between mb-6"><p class="text-sm text-slate-500"><strong class="text-slate-900"><?= count($items) ?></strong> resultados para “<?= htmlspecialchars($search->keywords) ?>”</p><button type="button" onclick="openGeneralSearchModal(true)" class="text-sm font-bold text-slate-600 hover:text-black">Modificar filtros</button></div>
+        <p class="mb-6 text-sm text-slate-500"><strong class="text-slate-900"><?= count($items) ?></strong> resultados para “<?= htmlspecialchars($search->keywords) ?>”</p>
         <?php if ($searchError): ?><div class="mb-6 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700"><?= htmlspecialchars($searchError) ?></div><?php endif; ?>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <?php foreach ($items as $item): ?>
@@ -27,5 +16,4 @@
             <?php endforeach; ?>
         </div>
         <?php if (empty($items)): ?><div class="bg-white rounded-2xl border shadow-sm text-center py-20"><h2 class="text-xl font-bold text-slate-900">Sin resultados</h2><p class="mt-2 text-sm text-slate-500">Prueba a ajustar los filtros.</p></div><?php endif; ?>
-    <?php endif; ?>
 </section>

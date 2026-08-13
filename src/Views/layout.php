@@ -48,7 +48,7 @@
                 <div class="flex items-center gap-4 sm:gap-8 h-full shrink-0">
                     <nav class="flex h-full items-center gap-4 sm:gap-8 text-sm font-medium">
                         <a href="/" class="flex h-full items-center px-1 border-b-2 <?= $page === 'results' ? 'border-black text-foreground font-bold' : 'border-transparent text-muted-foreground hover:text-foreground transition-all' ?>">Resultados</a>
-                        <a href="/explore" class="flex h-full items-center px-1 border-b-2 <?= $page === 'general-search' ? 'border-black text-foreground font-bold' : 'border-transparent text-muted-foreground hover:text-foreground transition-all' ?>">Buscar</a>
+                        <button type="button" onclick="openGeneralSearchModal()" class="flex h-full items-center px-1 border-b-2 <?= $page === 'general-search' ? 'border-black text-foreground font-bold' : 'border-transparent text-muted-foreground hover:text-foreground transition-all' ?>">Buscar</button>
                         <a href="/searches" class="flex h-full items-center px-1 border-b-2 <?= $page === 'searches' ? 'border-black text-foreground font-bold' : 'border-transparent text-muted-foreground hover:text-foreground transition-all' ?>">Búsquedas</a>
                     </nav>
                     <div class="h-6 w-px bg-slate-200"></div>
@@ -67,7 +67,7 @@
 
     <!-- Modal Form -->
     <?php $isSavedSearchForm = $page === 'searches'; ?>
-    <?php if ($isSavedSearchForm || $page === 'general-search'): ?>
+    <?php if ($page !== 'logout'): ?>
     <div id="modal-container" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm invisible opacity-0 transition-all duration-200 overflow-y-auto py-4">
         <div id="modal-content" class="relative w-full max-w-xl bg-white shadow-2xl rounded-2xl overflow-hidden transform opacity-0 scale-95 transition-all duration-200 my-auto">
             <div class="px-6 py-4 border-b flex items-center justify-between bg-white">
@@ -300,27 +300,17 @@
                     </div>
 
                     <!-- ESTADO -->
-                    <?php if ($isSavedSearchForm): ?><div class="space-y-4 pt-6 border-t border-slate-100">
+                    <?php if ($isSavedSearchForm): ?><div id="saved-search-state" class="space-y-4 pt-6 border-t border-slate-100">
                         <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ESTADO</h3>
-                        <div class="flex flex-col gap-4 sm:flex-row sm:gap-8">
-                            <label class="flex items-center gap-3 cursor-pointer group w-fit">
-                                <div class="relative flex items-center">
-                                    <input type="checkbox" name="active" value="1" id="field-active" class="peer sr-only" checked>
-                                    <div class="w-10 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
-                                </div>
-                                <span class="text-sm font-bold text-slate-900 select-none">Búsqueda activa</span>
-                            </label>
-
-                            <label class="flex items-center gap-3 cursor-pointer group w-fit">
-                                <div class="relative flex items-center">
-                                    <input type="checkbox" name="title_only" value="1" id="field-title_only" class="peer sr-only" checked>
-                                    <div class="w-10 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
-                                </div>
-                                <span class="text-sm font-bold text-slate-900 select-none">Solo en título</span>
-                            </label>
-                        </div>
-                    </div><?php else: ?>
-                    <div class="pt-6 border-t border-slate-100">
+                        <label class="flex items-center gap-3 cursor-pointer group w-fit">
+                            <div class="relative flex items-center">
+                                <input type="checkbox" name="active" value="1" id="field-active" class="peer sr-only" checked>
+                                <div class="w-10 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                            </div>
+                            <span class="text-sm font-bold text-slate-900 select-none">Búsqueda activa</span>
+                        </label>
+                    </div><?php endif; ?>
+                    <div class="<?= $isSavedSearchForm ? 'pt-4' : 'pt-6 border-t border-slate-100' ?>">
                         <label class="flex items-center gap-3 cursor-pointer group w-fit">
                             <div class="relative flex items-center">
                                 <input type="checkbox" name="title_only" value="1" id="field-title_only" class="peer sr-only" checked>
@@ -328,7 +318,7 @@
                             </div>
                             <span class="text-sm font-bold text-slate-900 select-none">Solo en título</span>
                         </label>
-                    </div><?php endif; ?>
+                    </div>
                 </div>
 
                 <!-- Footer -->

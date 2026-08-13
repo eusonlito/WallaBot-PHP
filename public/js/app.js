@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('btn-submit-search');
         if (btn) {
             btn.disabled = true;
-            btn.innerText = 'Guardando...';
+            btn.innerText = this.method.toUpperCase() === 'GET' ? 'Buscando...' : 'Guardando...';
             btn.classList.add('opacity-50', 'cursor-not-allowed');
         }
     });
@@ -270,13 +270,10 @@ function toggleExtraFilters() {
 }
 
 function openSearchModal() {
+    configureSearchForm('saved');
     document.getElementById('modal-title').innerText = 'Nueva búsqueda';
     document.getElementById('btn-submit-search').innerText = 'Crear búsqueda';
-    const deleteBtn = document.getElementById('btn-delete-search');
-    if (deleteBtn) {
-        deleteBtn.classList.add('hidden');
-        deleteBtn.classList.remove('flex');
-    }
+    setDeleteSearchButtonVisible(false);
     
     document.getElementById('search-form').reset();
     document.getElementById('field-id').value = '';
@@ -301,12 +298,12 @@ function openGeneralSearchModal(keepValues = false) {
     const form = document.getElementById('search-form');
     const title = document.getElementById('modal-title');
     const submit = document.getElementById('btn-submit-search');
-    const deleteBtn = document.getElementById('btn-delete-search');
 
+    configureSearchForm('general');
     if (!keepValues) form?.reset();
     if (title) title.innerText = 'Buscar en Wallapop';
     if (submit) submit.innerText = 'Buscar';
-    if (deleteBtn) deleteBtn.classList.add('hidden');
+    setDeleteSearchButtonVisible(false);
     if (keepValues && typeof generalSearchData !== 'undefined') populateSearchForm(generalSearchData);
     toggleExtraFilters();
 
@@ -316,6 +313,26 @@ function openGeneralSearchModal(keepValues = false) {
     container?.classList.add('opacity-100');
     content?.classList.remove('opacity-0', 'scale-95');
     content?.classList.add('opacity-100', 'scale-100');
+}
+
+function configureSearchForm(mode) {
+    const form = document.getElementById('search-form');
+    const savedSearchMode = mode === 'saved';
+
+    if (form) {
+        form.method = savedSearchMode ? 'POST' : 'GET';
+        form.action = savedSearchMode ? '/searches/save' : '/explore';
+    }
+
+    document.getElementById('saved-search-state')?.classList.toggle('hidden', !savedSearchMode);
+}
+
+function setDeleteSearchButtonVisible(visible) {
+    const deleteBtn = document.getElementById('btn-delete-search');
+    if (!deleteBtn) return;
+
+    deleteBtn.classList.toggle('hidden', !visible);
+    deleteBtn.classList.toggle('flex', visible);
 }
 
 function populateSearchForm(search) {
@@ -355,14 +372,12 @@ function editSearch(id) {
     if (typeof searchesData === 'undefined') return;
     const s = searchesData.find(x => x.id == id);
     if (!s) return;
+
+    configureSearchForm('saved');
     
     document.getElementById('modal-title').innerText = 'Editar búsqueda';
     document.getElementById('btn-submit-search').innerText = 'Guardar';
-    const deleteBtn = document.getElementById('btn-delete-search');
-    if (deleteBtn) {
-        deleteBtn.classList.remove('hidden');
-        deleteBtn.classList.add('flex');
-    }
+    setDeleteSearchButtonVisible(true);
 
     document.getElementById('field-id').value = s.id;
     document.getElementById('field-active').checked = !!s.active;
